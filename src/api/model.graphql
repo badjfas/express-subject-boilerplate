@@ -1,5 +1,9 @@
 type User {
     id: ID!
+    studentId: String!
+    password: String!
+    firstName: String!
+    lastName: String!
 }
 
 type Query {

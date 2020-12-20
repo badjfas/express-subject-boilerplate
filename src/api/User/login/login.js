@@ -7,8 +7,8 @@ export default {
             const hashPassword = crypto.createHash("sha512").update(args.password).digest("base64");
             try {
                 const userData = await User.findOne({
-                    where: { email: args.email },
-                    attributes: ["firstName", "lastName", "avatar", "id", "email", "password"],
+                    where: { studentId: args.studentId },
+                    attributes: ["firstName", "lastName", "avatar", "id", "studentId", "password"],
                     raw: true
                 });
                 if (userData.password === hashPassword) {
@@ -16,9 +16,10 @@ export default {
                         id: userData.id,
                         fullName: userData.firstName + userData.lastName
                     });
+                } else {
+                    throw Error("로그인 오류");
                 }
             } catch (e) {
-                console.log(e);
                 throw Error("로그인 에러");
             }
         }
