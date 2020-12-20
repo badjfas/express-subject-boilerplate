@@ -8,7 +8,6 @@ const jwtOptions = {
 };
 
 const verifyUser = async (payload, done) => {
-    //context의 isAuth에서 payload가 오면
     const { user } = payload;
     try {
         if (user !== null) {
