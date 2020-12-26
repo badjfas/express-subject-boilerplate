@@ -1,9 +1,20 @@
+scalar Date
 type User {
     id: ID!
     studentId: String!
     password: String!
     firstName: String!
     lastName: String!
+    createdAt: Date
+}
+
+type Feed {
+    id: ID!
+    avatar: String!
+    user: User!
+    isLiked: Boolean
+    createdAt: Date
+    contents: String
 }
 
 type Query {

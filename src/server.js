@@ -1,29 +1,27 @@
 import { ApolloServer } from "apollo-server-express";
 import { schema } from "./schema";
-import logger from "morgan";
 import express from "express";
 import mysql from "mysql";
 import "./env";
 import "./sequelize";
+
 import "./passport";
-import { isAuth } from "./middlewares";
+
+import { isAuth } from "./passport";
+
 import { authenticateJwt } from "./passport";
 
 const server = new ApolloServer({
     schema: schema,
-    context: ({ res, req }) => {
-        return {
-            req,
-            res,
-            isAuth
-        };
+    context: ({ req }) => {
+        return { req: req, isAuth };
     },
     introspection: true
 });
 
 /* Mysql 저장소 연결 */
 const storageConnection = mysql.createConnection({
-    host: "218.232.72.231",
+    host: "1.231.176.58",
     user: "bjwkor",
     password: "bjwkor",
     port: 3306,
@@ -42,11 +40,10 @@ storageConnection.connect(err => {
 const opt = {
     port: process.env.PORT || 4001
 };
-
 const app = express(); //express 사용
 
-app.use(logger("dev")); // 콘솔에 로그찍히는 모듈
 app.use(authenticateJwt);
+
 server.applyMiddleware({ app }); //아폴로 서버에 express 적용;
 
-app.listen({ ...opt }, () => console.log(`🚀 Server ready at http://localhost:${opt.port}${server.graphqlPath}`));
+app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:${opt.port}${server.graphqlPath}`));

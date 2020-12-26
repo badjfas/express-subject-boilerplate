@@ -1,27 +1,33 @@
 import passport from "passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
-import { User } from "./sequelize";
 
 const jwtOptions = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 헤더에서 토큰을 가져옴
-    secretOrKey: process.env.JWT_SECRET
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //클라이언트가 요청을 보내면 토큰이 있는지 확인하는녀석 또는 가져오는녀석 ?
+    secretOrKey: "sdfsopfjspafjpodsjopvcxjopvxjzopv"
 };
 
-const verifyUser = async (payload, done) => {
-    const { user } = payload;
-    try {
-        if (user !== null) {
-            return done(null, user);
-        } else {
-            return done(null, false);
-        }
-    } catch (e) {
-        return done(e, false);
+//ES6 문법
+const verifyUser = (jwt_payload, done) => {
+    console.log(jwt_payload, "verifyUser");
+    if (jwt_payload) {
+        return done(null, jwt_payload);
+    } else {
+        return done(null, false);
     }
 };
 
+export const isAuth = request => {
+    if (!request.user) {
+        throw Error("허용되지 않은 유저 입니다.");
+    }
+    return;
+};
+
+// export const generateToken = () => {};
+
 export const authenticateJwt = (req, res, next) => {
-    return passport.authenticate("jwt", { session: false }, (error, user) => {
+    return passport.authenticate("jwt", { session: false }, (err, user) => {
+        console.log(user, "authenticateJwt", err);
         if (user) {
             req.user = user;
         }
@@ -30,4 +36,5 @@ export const authenticateJwt = (req, res, next) => {
 };
 
 passport.use(new Strategy(jwtOptions, verifyUser));
+
 passport.initialize();
