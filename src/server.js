@@ -1,49 +1,30 @@
-import { ApolloServer } from "apollo-server-express";
-import { schema } from "./schema";
 import express from "express";
 import mysql from "mysql";
-import "./env";
 import "./sequelize";
 
-import "./passport";
-
-import { isAuth } from "./passport";
-
-import { authenticateJwt } from "./passport";
-
-const server = new ApolloServer({
-    schema: schema,
-    context: ({ req }) => {
-        return { req: req, isAuth };
-    },
-    introspection: true
-});
-
-/* Mysql 저장소 연결 */
 const storageConnection = mysql.createConnection({
-    host: "1.231.176.58",
-    user: "bjwkor",
-    password: "bjwkor",
-    port: 3306,
-    database: "capstone", //Mysql schema
-    timezone: "+09:00", // 한국 시간
-    dateStrings: "date" // 시간
+  host: "localhost", // 로컬
+  user: "root", // 디비 아이디
+  password: "1111qqqq", // 디비 비밀번호
+  port: 3306,
+  database: "subject", // mysql 스키마 이름
+  timezone: "+09:00",
+  dateStrings: "date",
 });
 
-storageConnection.connect(err => {
-    if (err) {
-        return;
-    }
-    storageConnection.end();
+storageConnection.connect((err) => {
+  if (err) {
+    return;
+  }
+  storageConnection.end();
 });
 
-const opt = {
-    port: process.env.PORT || 4001
-};
+const router = require("./api/index");
+
 const app = express(); //express 사용
 
-app.use(authenticateJwt);
+app.use("/", router);
 
-server.applyMiddleware({ app }); //아폴로 서버에 express 적용;
-
-app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:${opt.port}${server.graphqlPath}`));
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000`)
+);
