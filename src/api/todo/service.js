@@ -1,21 +1,13 @@
 import { Todo } from "../../sequelize";
 
 export default {
-  bulkCreate: async (res, req, next) => {
+  create: async (req, res, next) => {
     try {
-      const result = await Todo.bulkCreate([
-        { title: "title 1", subtitle: "subtitle 1", done: 1 },
-        { title: "title 2", subtitle: "subtitle 2", done: 1 },
-        { title: "title 3", subtitle: "subtitle 3", done: 0 },
-        { title: "title 4", subtitle: "subtitle 4", done: 0 },
-        { title: "title 5", subtitle: "subtitle 5", done: 0 },
-        { title: "title 6", subtitle: "subtitle 6", done: 1 },
-      ]);
-      res.json("true");
-      next();
-    } catch (e) {
-      console.log(e);
-      throw Error("허접");
+      const { title, subtitle } = req.body;
+      await Todo.create({ title: title, subtitle: subtitle });
+      res.json("success");
+    } catch {
+      res.status(404).send("not found");
     }
   },
   read: async (req, res, next) => {
@@ -24,6 +16,24 @@ export default {
       res.json(list);
     } catch (e) {
       console.log(e);
+      res.status(404).send("not found");
+    }
+  },
+  complete: async (req, res, next) => {
+    const { id } = req.body;
+
+    try {
+      const isExistTodo = await Todo.findOne({ where: { id: id }, raw: true });
+      if (!isExistTodo) {
+        res.status(400).send("not exist todo");
+        return false;
+      }
+
+      await Todo.update({ done: 1 }, { where: { id: id } }).then((result) => {
+        res.status(200).send("success");
+      });
+    } catch {
+      res.status(404).send("not found");
     }
   },
 };

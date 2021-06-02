@@ -1,5 +1,6 @@
 import express from "express";
 import mysql from "mysql";
+import bodyParser from "body-parser";
 import "./sequelize";
 
 const storageConnection = mysql.createConnection({
@@ -23,6 +24,7 @@ const router = require("./api/index");
 
 const app = express(); //express 사용
 
+app.use(express.json());
 app.use("/", router);
 
 app.listen({ port: 4000 }, () =>
